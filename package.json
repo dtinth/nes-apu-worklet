@@ -1,6 +1,6 @@
 {
   "name": "@dtinth/nes-apu-worklet",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "NES APU exposed as an HTML5 AudioWorklet. Generate 8-bit sounds fom Web Audio API! Powered by nes-js’s APU code.",
   "main": "nes-apu-node.js",
   "files": [
