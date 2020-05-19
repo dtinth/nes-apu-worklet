@@ -19,7 +19,7 @@ class NesApuProcessor extends AudioWorkletProcessor {
     }
     this.audio = {
       getSampleRate: () => sampleRate,
-      push: data => {
+      push: (data) => {
         if (this.bufferIndex >= this.bufferLength) return
         this.buffer[this.bufferIndex++] = data
       },
@@ -29,7 +29,7 @@ class NesApuProcessor extends AudioWorkletProcessor {
     this.apu.setAudio(this.audio)
     this.queue = []
     this.queueDirty = true
-    this.port.onmessage = event => {
+    this.port.onmessage = (event) => {
       if (event.data.address) {
         const { address, value, time = 0 } = event.data
         this.queue.push({ address, value, time })
@@ -66,7 +66,7 @@ class NesApuProcessor extends AudioWorkletProcessor {
               const nextEvent = this.queue[queueIndex]
               if (nextEvent && (!nextEvent.time || time >= nextEvent.time)) {
                 this.apu.storeRegister(nextEvent.address, nextEvent.value)
-                console.log('Store', nextEvent.address.toString(16), nextEvent.value.toString(2), '@', nextEvent.time, 'actual', currentTime)
+                this.port.postMessage(nextEvent)
                 queueIndex++
               } else {
                 break

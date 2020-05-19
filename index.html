@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nes-apu-worklet demo</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/comic-mono@0.0.1/index.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/tailwindtinth@2.1.0/dist/tailwindtinth.min.css"
+    />
+  </head>
+  <body class="bg-#353433 text-#e9e8e7 p-6 sm:pl-16 pt-16">
+    <h1 class="text-2xl font-bold text-#8b8685 mb-4">
+      <a href="https://github.com/dtinth/nes-apu-worklet" class="text-#bbeeff"
+        >nes-apu-node</a
+      >
+      demo
+    </h1>
+    <button
+      id="play"
+      class="border border-#656463 bg-transparent text-#8b8685 py-2 px-4 rounded font-bold"
+      disabled
+    >
+      Play it
+    </button>
+    <script type="module">
+      import { NesApuNode } from './nes-apu-node.js'
+
+      const context = (window.context = new AudioContext())
+      const ftot = (frequency) => {
+        return Math.round(1789773 / (16 * frequency)) - 1
+      }
+      const mtof = (midiNote) => {
+        return 440 * 2 ** ((midiNote - 69) / 12)
+      }
+
+      context.audioWorklet
+        .addModule('nes-apu-worklet.js')
+        .then(() => {
+          play.disabled = false
+          play.className =
+            'border border-#d7fc70 bg-#d7fc70 text-#090807 font-bold py-2 px-4 rounded'
+          const apu = new NesApuNode(context)
+          apu.connect(context.destination)
+          apu.port.onmessage = ({ data }) => {
+            console.log(
+              'APU',
+              '$' + data.address.toString(16).padStart(4, '0'),
+              data.value.toString(2).padStart(8, '0'),
+              '@',
+              data.time,
+            )
+          }
+          window.apu = apu
+
+          play.onclick = () => {
+            context.resume()
+
+            apu.storeRegisterAtTime(0x4015, 0b00001111)
+
+            // Enable channels
+            const t = context.currentTime
+            const setTriangle = (frequency, time) => {
+              apu.storeRegisterAtTime(0x4008, 0xff, time)
+              const timer = ftot(frequency * 2)
+              apu.storeRegisterAtTime(0x400a, timer & 0xff, time)
+              apu.storeRegisterAtTime(0x400b, timer >> 8, time)
+            }
+            const setPulse = (index, duty, frequency, volume = 1, time) => {
+              const base = 0x4000 + index * 4
+              apu.storeRegisterAtTime(
+                base,
+                0b00110000 | (Math.min(15, volume * 16) & 0xf) | (duty << 6),
+                time,
+              )
+              const timer = ftot(frequency * 2)
+              if (frequency != null) {
+                apu.storeRegisterAtTime(base + 2, timer & 0xff, time)
+                apu.storeRegisterAtTime(base + 3, timer >> 8, time)
+              }
+            }
+            const silenceTriangle = (time) => {
+              apu.storeRegisterAtTime(0x4008, 0x80, time)
+            }
+
+            for (const [i, n] of [
+              38,
+              40,
+              41,
+              33,
+              32,
+              34,
+              31,
+              37,
+              36,
+            ].entries()) {
+              setTriangle(mtof(n + 48 - 36), t + i / 2)
+              apu.storeRegisterAtTime(
+                0x400c,
+                i === 8 ? 0b00001111 : 0b00000001,
+                t + i / 2,
+              )
+              apu.storeRegisterAtTime(0x400e, 0b00000001, t + i / 2)
+              apu.storeRegisterAtTime(0x400f, 0b00001000, t + i / 2)
+              if (i === 0 || i === 4 || i === 7) {
+                apu.storeRegisterAtTime(0x400c, 0b00000100, t + (i + 0.64) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00001000, t + (i + 0.64) / 2)
+                apu.storeRegisterAtTime(0x400f, 0b00001000, t + (i + 0.64) / 2)
+              }
+            }
+            for (const [i, n] of [
+              0,
+              65,
+              69,
+              76,
+              76,
+              74,
+              71,
+              74,
+              67,
+            ].entries()) {
+              if (n) {
+                for (let j = 0; j < 16; j++) {
+                  setPulse(
+                    0,
+                    0,
+                    mtof(n - 12),
+                    (j / 15) * 0.5 + 0.3,
+                    t + i / 2 + j * 0.02,
+                  )
+                }
+              }
+            }
+            for (const [i, n] of [
+              0,
+              62,
+              65,
+              72,
+              71,
+              67,
+              67,
+              65,
+              64,
+            ].entries()) {
+              if (n) {
+                for (let j = 0; j < 16; j++) {
+                  setPulse(
+                    1,
+                    1,
+                    j == 0 ? mtof(n - 12) : null,
+                    (j / 15) * 0.5 + 0.3,
+                    t + i / 2 + j * 0.02,
+                  )
+                }
+              }
+            }
+            apu.storeRegisterAtTime(0x4015, 0, t + 6)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    </script>
+  </body>
+</html>

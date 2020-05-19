@@ -50,10 +50,18 @@ apu.storeRegisterAtTime(0x4003, 0b00000001)
 
 ## API
 
-### `new NesApuNode(audioContext)`
+### `const apu = new NesApuNode(audioContext)`
 
 Creates a new NES APU node.
 
-### `NesApuNode.prototype.storeRegisterAtTime(address, value, time)`
+### `apu.storeRegisterAtTime(address, value, time)`
 
 Enqueues a command to write a value to the APU registers. Check out [Nesdev wiki](https://wiki.nesdev.com/w/index.php/APU#Registers) for reference of each register.
+
+### `apu.port.onmessage = fn`
+
+Be notified when data is written to the APU register. `fn` is called with `event` object.
+
+- `event.data.address` — Register address
+- `event.data.value` — Register value
+- `event.data.time` — Audio time
