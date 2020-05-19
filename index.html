@@ -95,16 +95,25 @@
 
             for (const [i, n] of [
               38,
-              40,
+              [37, 38, 40],
               41,
-              33,
               32,
-              34,
               31,
+              [31, 35, 39],
+              43,
               37,
               36,
             ].entries()) {
-              setTriangle(mtof(n + 48 - 36), t + i / 2)
+              if (Array.isArray(n)) {
+                for (const [j, nt] of n.entries()) {
+                  setTriangle(mtof(nt + 48 - 36), t + (i + j / n.length) / 2)
+                  silenceTriangle(t + (i + (j + 0.64) / n.length) / 2)
+                }
+              } else {
+                setTriangle(mtof(n + 48 - 36), t + i / 2)
+              }
+
+              // Noise channel
               apu.storeRegisterAtTime(
                 0x400c,
                 i === 8 ? 0b00001111 : 0b00000001,
@@ -139,6 +148,8 @@
                 apu.storeRegisterAtTime(0x400f, 0b00101000, t + (i + 0.88) / 2)
               }
             }
+
+            // Pulse 1
             for (const [i, ns] of [
               0,
               65,
@@ -163,6 +174,8 @@
                 }
               }
             }
+
+            // Pulse 2 notes
             for (const [i, n] of [0, 62, 65, 72, 71, 68, 67, 65].entries()) {
               if (n) {
                 for (let j = 0; j < 16; j++) {
@@ -176,6 +189,8 @@
                 }
               }
             }
+
+            // Pulse 2 arpeggio
             {
               let k = 0
               for (let i = 4; i < 6; i += 0.04) {
