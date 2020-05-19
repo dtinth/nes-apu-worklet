@@ -31,9 +31,119 @@
     >
       Play demo jingle
     </button>
-    <p class="mt-4 max-w-xl">
-      View browser console to see APU register writes.
-    </p>
+    <table class="mt-4">
+      <tr>
+        <th class="text-#d7fc70" colspan="2">Pulse 1</th>
+        <th class="text-#d7fc70" colspan="2">Pulse 2</th>
+        <th class="text-#d7fc70" colspan="2">Triangle</th>
+        <th class="text-#d7fc70" colspan="2">Noise</th>
+      </tr>
+      <tr>
+        <th class="font-mono text-right text-#8b8685" scope="col">$4000</th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4000">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $4004
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4004">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $4008
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4008">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $400C
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg400c">
+          --------
+        </td>
+      </tr>
+      <tr>
+        <th class="font-mono text-right text-#8b8685" scope="col">$4001</th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4001">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $4005
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4005">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $4009
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4009">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $400D
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg400d">
+          --------
+        </td>
+      </tr>
+      <tr>
+        <th class="font-mono text-right text-#8b8685" scope="col">$4002</th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4002">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $4006
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4006">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $400A
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg400a">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $400E
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg400e">
+          --------
+        </td>
+      </tr>
+      <tr>
+        <th class="font-mono text-right text-#8b8685" scope="col">$4003</th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4003">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $4007
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4007">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $400B
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg400b">
+          --------
+        </td>
+        <th class="font-mono text-right text-#8b8685 pl-2" scope="col">
+          $400F
+        </th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg400f">
+          --------
+        </td>
+      </tr>
+      <tr>
+        <th class="text-#d7fc70" colspan="2">Status</th>
+      </tr>
+      <tr>
+        <th class="font-mono text-right text-#8b8685" scope="col">$4015</th>
+        <td class="font-mono text-left pl-2 text-#bbeeff" id="reg4015">
+          --------
+        </td>
+      </tr>
+    </table>
     <script type="module">
       import { NesApuNode } from 'https://cdn.jsdelivr.net/npm/@dtinth/nes-apu-worklet@1.0.1/nes-apu-node.js'
 
@@ -56,13 +166,11 @@
           const apu = new NesApuNode(context)
           apu.connect(context.destination)
           apu.port.onmessage = ({ data }) => {
-            console.log(
-              'APU',
-              '$' + data.address.toString(16).padStart(4, '0'),
-              data.value.toString(2).padStart(8, '0'),
-              '@',
-              data.time,
-            )
+            const address = data.address.toString(16)
+            const element = document.getElementById(`reg${address}`)
+            const value = data.value.toString(2).padStart(8, '0')
+            element.textContent = value
+            console.log('APU', '$' + address, value, '@', data.time)
           }
           window.apu = apu
 
