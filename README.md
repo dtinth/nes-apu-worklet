@@ -1,6 +1,6 @@
 # nes-apu-worklet
 
-[NES APU](https://wiki.nesdev.com/w/index.php/APU) exposed as HTML5 AudioWorklet. Generate 8-bit sounds fom Web Audio API!
+[NES APU](https://wiki.nesdev.com/w/index.php/APU) exposed as HTML5 AudioWorklet. Generate 8-bit sounds fom Web Audio API! Powered by [Takahiro’s nes-js](https://github.com/takahirox/nes-js/blob/master/src/Apu.js)’s [APU](https://github.com/takahirox/nes-js/blob/master/src/Apu.js) code (imported directly!).
 
 ## Usage
 
