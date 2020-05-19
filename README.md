@@ -7,7 +7,7 @@
 ## Usage
 
 ```js
-import { NesApuNode } from 'https://cdn.jsdelivr.net/npm/@dtinth/nes-apu-worklet@1.0.1/nes-apu-node.js'
+import { NesApuNode } from 'https://cdn.jsdelivr.net/npm/@dtinth/nes-apu-worklet@1/nes-apu-node.js'
 const context = new AudioContext()
 ```
 
@@ -15,7 +15,7 @@ const context = new AudioContext()
 
 ```js
 await context.audioWorklet.addModule(
-  'https://cdn.jsdelivr.net/npm/@dtinth/nes-apu-worklet@1.0.1/nes-apu-worklet.js',
+  'https://cdn.jsdelivr.net/npm/@dtinth/nes-apu-worklet@1/nes-apu-worklet.js',
 )
 ```
 
