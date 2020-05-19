@@ -32,7 +32,7 @@
       Play it
     </button>
     <script type="module">
-      import { NesApuNode } from './nes-apu-node.js'
+      import { NesApuNode } from 'https://cdn.jsdelivr.net/npm/@dtinth/nes-apu-worklet@1.0.1/nes-apu-node.js'
 
       const context = (window.context = new AudioContext())
       const ftot = (frequency) => {
@@ -43,7 +43,9 @@
       }
 
       context.audioWorklet
-        .addModule('nes-apu-worklet.js')
+        .addModule(
+          'https://cdn.jsdelivr.net/npm/@dtinth/nes-apu-worklet@1.0.1/nes-apu-worklet.js',
+        )
         .then(() => {
           play.disabled = false
           play.className =
@@ -112,44 +114,56 @@
               apu.storeRegisterAtTime(0x400f, 0b00001000, t + i / 2)
               if (i === 0 || i === 4 || i === 7) {
                 apu.storeRegisterAtTime(0x400c, 0b00000100, t + (i + 0.64) / 2)
-                apu.storeRegisterAtTime(0x400e, 0b00001000, t + (i + 0.64) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00000001, t + (i + 0.64) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00000010, t + (i + 0.65) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00000100, t + (i + 0.66) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00001000, t + (i + 0.67) / 2)
                 apu.storeRegisterAtTime(0x400f, 0b00001000, t + (i + 0.64) / 2)
               }
+              if (i === 1 || i === 5) {
+                apu.storeRegisterAtTime(0x400c, 0b00011011, t + (i + 0.64) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00001011, t + (i + 0.64) / 2)
+                apu.storeRegisterAtTime(0x400f, 0b00111000, t + (i + 0.64) / 2)
+              }
+              if (i === 5) {
+                apu.storeRegisterAtTime(0x400c, 0b00011011, t + (i + 0.33) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00001001, t + (i + 0.33) / 2)
+                apu.storeRegisterAtTime(0x400f, 0b00111000, t + (i + 0.33) / 2)
+              }
+              if (i === 6) {
+                apu.storeRegisterAtTime(0x400c, 0b00011000, t + (i + 0.75) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00000100, t + (i + 0.75) / 2)
+                apu.storeRegisterAtTime(0x400f, 0b00101000, t + (i + 0.75) / 2)
+                apu.storeRegisterAtTime(0x400c, 0b00011100, t + (i + 0.88) / 2)
+                apu.storeRegisterAtTime(0x400e, 0b00000011, t + (i + 0.88) / 2)
+                apu.storeRegisterAtTime(0x400f, 0b00101000, t + (i + 0.88) / 2)
+              }
             }
-            for (const [i, n] of [
+            for (const [i, ns] of [
               0,
               65,
-              69,
+              [67, 68, null, 69],
               76,
-              76,
+              [74, null, 75, null, 76],
               74,
               71,
               74,
               67,
             ].entries()) {
-              if (n) {
+              if (ns) {
                 for (let j = 0; j < 16; j++) {
+                  const n = (Array.isArray(ns) ? ns : [ns])[j]
                   setPulse(
                     0,
                     0,
-                    mtof(n - 12),
+                    n != null ? mtof(n - 12) : null,
                     (j / 15) * 0.5 + 0.3,
                     t + i / 2 + j * 0.02,
                   )
                 }
               }
             }
-            for (const [i, n] of [
-              0,
-              62,
-              65,
-              72,
-              71,
-              67,
-              67,
-              65,
-              64,
-            ].entries()) {
+            for (const [i, n] of [0, 62, 65, 72, 71, 67, 67, 65].entries()) {
               if (n) {
                 for (let j = 0; j < 16; j++) {
                   setPulse(
@@ -160,6 +174,13 @@
                     t + i / 2 + j * 0.02,
                   )
                 }
+              }
+            }
+            {
+              let k = 0
+              for (let i = 4; i < 6; i += 0.04) {
+                const n = [55, 59, 64][k++ % 3]
+                setPulse(1, 0, mtof(n - 12), 0.7, t + i)
               }
             }
             apu.storeRegisterAtTime(0x4015, 0, t + 6)
