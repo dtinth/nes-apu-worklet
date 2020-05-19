@@ -42,10 +42,10 @@ apu.storeRegisterAtTime(0x4000, 0b00111111)
 apu.storeRegisterAtTime(0x4002, 0b11111011)
 //                      |         ***** Length counter (disabled)
 //                      |         |||||*** = Timer high = 1
-//                      | Timer = 1 * 256 + 251 = 507
-//                      | Frequency = 1789773 [CPU speed hz] / (16 * (507 [Timer] + 1))
-//                      |           = 220.1984498031496 hz (~A below Middle C)
 apu.storeRegisterAtTime(0x4003, 0b00000001)
+//                      Timer = 1 * 256 + 251 = 507
+//                      Frequency = 1789773 [CPU speed hz] / (16 * (507 [Timer] + 1))
+//                                = 220.1984498031496 hz (~A below Middle C)
 ```
 
 ## API
