@@ -1,0 +1,24 @@
+{
+  "name": "nes-apu-worklet",
+  "version": "1.0.0",
+  "description": "NES APU exposed as an HTML5 AudioWorklet. Generate 8-bit sounds fom Web Audio API! Powered by nes-js’s APU code.",
+  "main": "nes-apu-node.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dtinth/nes-apu-worklet.git"
+  },
+  "keywords": [
+    "NES",
+    "APU",
+    "chiptune"
+  ],
+  "author": "Thai Pangsakulyanont <org.yi.dttvb@gmail.com> (http://dt.in.th/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dtinth/nes-apu-worklet/issues"
+  },
+  "homepage": "https://github.com/dtinth/nes-apu-worklet#readme"
+}
