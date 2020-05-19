@@ -66,7 +66,11 @@ class NesApuProcessor extends AudioWorkletProcessor {
               const nextEvent = this.queue[queueIndex]
               if (nextEvent && (!nextEvent.time || time >= nextEvent.time)) {
                 this.apu.storeRegister(nextEvent.address, nextEvent.value)
-                this.port.postMessage(nextEvent)
+                this.port.postMessage({
+                  address: nextEvent.address,
+                  value: nextEvent.value,
+                  time: time,
+                })
                 queueIndex++
               } else {
                 break
