@@ -26,7 +26,7 @@ let apu = new NesApuNode(context)
 apu.connect(context.destination)
 ```
 
-### Write register
+### Schedule writes to the APU registers
 
 ```js
 //                      * Status register
